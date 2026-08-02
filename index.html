@@ -1,43 +1,77 @@
-<!DOCTYPE html>
-<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Wedding Tattoo Experience</title>
-<style>
-:root{--gold:#b89b5e;}
-*{box-sizing:border-box}html,body{margin:0;height:100%;background:#000;color:#fff;font-family:system-ui}
-#splash,#app{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-#splash{flex-direction:column;background:#000;gap:20px}
-button{background:rgba(20,20,20,.8);border:1px solid rgba(184,155,94,.4);color:#fff;padding:10px 14px;border-radius:999px}
-#viewer{height:100%;display:flex;align-items:center;justify-content:center}
-img{max-width:100vw;max-height:100vh;object-fit:contain;filter:drop-shadow(0 10px 25px rgba(0,0,0,.6));transition:.25s opacity,.25s transform}
-#toolbar{position:fixed;bottom:calc(env(safe-area-inset-bottom)+12px);left:50%;transform:translateX(-50%);display:flex;gap:8px;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);padding:8px 10px;border-radius:999px}
-#counter{position:fixed;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.45);padding:6px 12px;border-radius:99px}
-#thumbs{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;overflow:auto;padding:20px;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:12px}
-#thumbs.show{display:grid}
-#thumbs img{width:100%;height:auto;cursor:pointer}
-</style></head>
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#050505">
+  <meta name="description" content="Wedding Tattoo Experience — catalogo digitale premium">
+  <title>Wedding Tattoo Experience</title>
+  <style>
+    :root{--bg:#050505;--panel:rgba(10,10,10,.78);--gold:#c99a36;--gold2:#f0cf75;--text:#f7f3ea;--muted:#b9b4aa;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
+    *{box-sizing:border-box}html,body{height:100%;margin:0;background:#000;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden}button{font:inherit}
+    body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 50% 35%,#1b160c 0,#090806 38%,#020202 75%);pointer-events:none}
+    .app{position:relative;height:100dvh;width:100%;isolation:isolate}
+    .stage{position:absolute;inset:0;display:grid;place-items:center;padding:calc(58px + var(--safe-top)) 16px calc(74px + var(--safe-bottom));touch-action:pan-y;user-select:none}
+    .page-shell{height:100%;max-height:100%;max-width:min(94vw,980px);display:grid;place-items:center;position:relative;filter:drop-shadow(0 24px 55px rgba(0,0,0,.72))}
+    .page-shell:after{content:"";position:absolute;inset:-1px;border:1px solid rgba(201,154,54,.28);pointer-events:none}
+    #pageImage{display:block;max-height:100%;max-width:100%;width:auto;height:auto;object-fit:contain;background:#080808;transition:opacity .24s ease,transform .28s cubic-bezier(.22,.61,.36,1);-webkit-user-drag:none}
+    #pageImage.leaving-left{opacity:0;transform:translateX(-26px) scale(.992)}#pageImage.leaving-right{opacity:0;transform:translateX(26px) scale(.992)}#pageImage.enter{opacity:0;transform:scale(.992)}
+    .topbar,.bottombar{position:absolute;left:0;right:0;z-index:10;display:flex;align-items:center;gap:10px;padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));pointer-events:none}
+    .topbar{top:0;padding-top:calc(10px + var(--safe-top));justify-content:space-between}.bottombar{bottom:0;padding-bottom:calc(12px + var(--safe-bottom));justify-content:center}
+    .brand{pointer-events:auto;display:flex;align-items:center;gap:9px;color:var(--gold2);letter-spacing:.13em;text-transform:uppercase;font-size:12px;text-shadow:0 1px 20px #000}
+    .brand-mark{width:24px;height:24px;border:1px solid var(--gold);transform:rotate(45deg);display:grid;place-items:center}.brand-mark span{transform:rotate(-45deg);font-family:Georgia,serif;font-size:12px}
+    .controls{display:flex;gap:8px;pointer-events:auto}.btn{width:42px;height:42px;border-radius:999px;border:1px solid rgba(201,154,54,.42);background:rgba(8,8,8,.66);backdrop-filter:blur(14px);color:var(--gold2);display:grid;place-items:center;cursor:pointer;transition:.18s ease}.btn:hover{border-color:var(--gold2);transform:translateY(-1px);background:rgba(25,20,10,.78)}.btn:active{transform:scale(.96)}.btn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8}
+    .counter{pointer-events:auto;min-width:108px;height:42px;padding:0 16px;border-radius:999px;border:1px solid rgba(201,154,54,.38);background:rgba(8,8,8,.68);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;color:#eee8dc;font-variant-numeric:tabular-nums;font-size:13px;letter-spacing:.08em}
+    .nav-edge{position:absolute;top:50%;z-index:8;transform:translateY(-50%);width:48px;height:72px;border:0;background:transparent;color:rgba(240,207,117,.82);cursor:pointer;display:grid;place-items:center}.nav-edge svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.3}.nav-edge.prev{left:5px}.nav-edge.next{right:5px}.nav-edge:hover{color:#fff1bd}.nav-edge:disabled{opacity:.18;cursor:default}
+    .drawer{position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.72);backdrop-filter:blur(18px);opacity:0;visibility:hidden;transition:.25s ease;display:flex;justify-content:flex-end}.drawer.open{opacity:1;visibility:visible}.drawer-panel{width:min(500px,100%);height:100%;background:linear-gradient(180deg,rgba(13,13,13,.98),rgba(4,4,4,.98));border-left:1px solid rgba(201,154,54,.28);padding:calc(18px + var(--safe-top)) 18px calc(18px + var(--safe-bottom));transform:translateX(25px);transition:.25s ease;display:flex;flex-direction:column}.drawer.open .drawer-panel{transform:none}.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.drawer-title{font-family:Georgia,serif;color:var(--gold2);font-size:24px;letter-spacing:.06em}.grid{overflow:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:2px 2px 24px;scrollbar-color:#7c6023 transparent}.thumb{position:relative;border:1px solid rgba(201,154,54,.22);background:#0b0b0b;padding:0;cursor:pointer;overflow:hidden;aspect-ratio:1/1.414}.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:.2s}.thumb:hover img{transform:scale(1.025)}.thumb.active{border-color:var(--gold2);box-shadow:0 0 0 1px var(--gold2),0 12px 28px rgba(0,0,0,.6)}.thumb span{position:absolute;right:6px;bottom:6px;min-width:26px;height:26px;padding:0 6px;border-radius:99px;background:rgba(0,0,0,.76);border:1px solid rgba(240,207,117,.55);display:grid;place-items:center;color:#fff3c6;font-size:11px}
+    .splash{position:absolute;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle at center,#161006 0,#050505 48%,#000 100%);transition:opacity .55s ease,visibility .55s}.splash.hidden{opacity:0;visibility:hidden}.splash-card{text-align:center;padding:32px;max-width:560px}.splash-logo{width:115px;height:115px;margin:0 auto 28px;border:1px solid var(--gold);transform:rotate(45deg);display:grid;place-items:center;box-shadow:0 0 80px rgba(201,154,54,.12)}.splash-logo div{transform:rotate(-45deg);font-family:Georgia,serif;color:var(--gold2);font-size:32px}.splash h1{font-family:Georgia,serif;font-weight:400;color:var(--gold2);font-size:clamp(30px,6vw,58px);margin:0 0 10px;letter-spacing:.05em}.splash p{color:#d5cbb8;letter-spacing:.18em;text-transform:uppercase;font-size:12px;margin:0 0 34px}.enter-btn{border:1px solid var(--gold);color:var(--gold2);background:transparent;padding:13px 30px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:.2s}.enter-btn:hover{background:var(--gold);color:#111}
+    .toast{position:absolute;left:50%;bottom:calc(82px + var(--safe-bottom));z-index:20;transform:translate(-50%,12px);opacity:0;padding:9px 14px;border-radius:999px;background:rgba(8,8,8,.86);border:1px solid rgba(201,154,54,.32);font-size:12px;color:#e9dfcb;transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:700px){.stage{padding-left:8px;padding-right:8px}.brand span:last-child{display:none}.nav-edge{display:none}.grid{grid-template-columns:repeat(3,1fr)}.btn{width:40px;height:40px}.counter{height:40px;min-width:96px}.page-shell{max-width:100%}}
+    @media(min-width:1200px){.stage{padding-top:68px;padding-bottom:80px}.page-shell{max-width:1100px}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  </style>
+</head>
 <body>
-<div id=splash><h1>Wedding Tattoo Experience</h1><button id=enter>Entra nel Wedding Book</button></div>
-<div id=app style="display:none">
-<div id=counter></div><div id=viewer><img id=page alt="Pagina catalogo"></div>
-<div id=toolbar>
-<button aria-label="Home" onclick="home()">⌂</button>
-<button aria-label="Precedente" onclick="go(-1)">◀</button>
-<button aria-label="Menu" onclick="thumbs.classList.toggle('show')">☰</button>
-<button aria-label="Schermo intero" onclick="fs()">⛶</button>
-<button aria-label="Successiva" onclick="go(1)">▶</button>
+<div class="app" id="app">
+  <div class="stage" id="stage" aria-live="polite">
+    <div class="page-shell"><img id="pageImage" src="images/page-01.png" alt="Pagina 1 del Wedding Book" draggable="false"></div>
+  </div>
+  <button class="nav-edge prev" id="prevEdge" aria-label="Pagina precedente"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+  <button class="nav-edge next" id="nextEdge" aria-label="Pagina successiva"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark"><span>W</span></div><span>Wedding Tattoo Experience</span></div>
+    <div class="controls">
+      <button class="btn" id="homeBtn" aria-label="Vai alla copertina"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button>
+      <button class="btn" id="menuBtn" aria-label="Apri indice"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <button class="btn" id="fullBtn" aria-label="Schermo intero"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/></svg></button>
+    </div>
+  </header>
+  <footer class="bottombar">
+    <button class="btn" id="prevBtn" aria-label="Pagina precedente"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+    <div class="counter"><span id="counter">Pagina 1 / 20</span></div>
+    <button class="btn" id="nextBtn" aria-label="Pagina successiva"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+  </footer>
+  <div class="drawer" id="drawer" aria-hidden="true"><div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Indice delle pagine"><div class="drawer-head"><div class="drawer-title">Indice</div><button class="btn" id="closeDrawer" aria-label="Chiudi indice"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="grid" id="thumbGrid"></div></div></div>
+  <div class="splash" id="splash"><div class="splash-card"><div class="splash-logo"><div>W</div></div><h1>Wedding Tattoo Experience</h1><p>Love. Marked. Forever.</p><button class="enter-btn" id="enterBtn">Entra nel Wedding Book</button></div></div>
+  <div class="toast" id="toast"></div>
 </div>
-<div id=thumbs></div></div>
 <script>
-const total=20;let p=1;
-const img=document.getElementById('page'),counter=document.getElementById('counter'),thumbs=document.getElementById('thumbs');
-function src(n){return `images/page-${String(n).padStart(2,'0')}.png`;}
-function preload(n){if(n<1||n>total)return;let i=new Image();i.src=src(n);}
-function show(){img.style.opacity=0;setTimeout(()=>{img.onerror=()=>img.alt='Immagine non disponibile';img.src=src(p);counter.textContent=`Pagina ${p} di ${total}`;img.onload=()=>{img.style.opacity=1;preload(p-1);preload(p+1);};},120);}
-function go(d){p=Math.min(total,Math.max(1,p+d));show();}
-function home(){p=1;show();thumbs.classList.remove('show');}
-function fs(){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
-document.getElementById('enter').onclick=()=>{splash.style.display='none';app.style.display='block';show();};
-for(let i=1;i<=total;i++){let t=new Image();t.src=src(i);t.loading='lazy';t.onclick=()=>{p=i;show();thumbs.classList.remove('show');};thumbs.appendChild(t);}
-let sx=0;addEventListener('touchstart',e=>sx=e.touches[0].clientX);addEventListener('touchend',e=>{let dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50)go(dx<0?1:-1);});
-addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1);});
-</script></body></html>
+(()=>{'use strict';
+const TOTAL=20, img=document.getElementById('pageImage'), counter=document.getElementById('counter'), drawer=document.getElementById('drawer'), grid=document.getElementById('thumbGrid'), toast=document.getElementById('toast');
+let current=1,busy=false,startX=0,startY=0,deltaX=0;
+const path=n=>`images/page-${String(n).padStart(2,'0')}.png`, thumbPath=n=>`thumbs/page-${String(n).padStart(2,'0')}.webp`;
+function preload(n){if(n<1||n>TOTAL)return;const p=new Image();p.src=path(n)}
+function updateUI(){counter.textContent=`Pagina ${current} / ${TOTAL}`;document.getElementById('prevBtn').disabled=current===1;document.getElementById('prevEdge').disabled=current===1;document.getElementById('nextBtn').disabled=current===TOTAL;document.getElementById('nextEdge').disabled=current===TOTAL;grid.querySelectorAll('.thumb').forEach((el,i)=>el.classList.toggle('active',i+1===current));preload(current-1);preload(current+1)}
+function go(n,dir=0){n=Math.max(1,Math.min(TOTAL,n));if(n===current||busy)return;busy=true;img.classList.add(dir>0?'leaving-left':'leaving-right');setTimeout(()=>{current=n;img.onload=()=>{img.className='enter';requestAnimationFrame(()=>requestAnimationFrame(()=>{img.className='';busy=false;updateUI()}))};img.onerror=()=>{busy=false;showToast('Immagine non disponibile')};img.src=path(current);img.alt=`Pagina ${current} del Wedding Book`;},180)}
+function showToast(t){toast.textContent=t;toast.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),1700)}
+function openDrawer(){drawer.classList.add('open');drawer.setAttribute('aria-hidden','false');setTimeout(()=>grid.querySelector('.thumb.active')?.scrollIntoView({block:'center'}),80)}function closeDrawer(){drawer.classList.remove('open');drawer.setAttribute('aria-hidden','true')}
+for(let i=1;i<=TOTAL;i++){const b=document.createElement('button');b.className='thumb'+(i===1?' active':'');b.setAttribute('aria-label',`Apri pagina ${i}`);b.innerHTML=`<img src="${thumbPath(i)}" alt="Anteprima pagina ${i}" loading="lazy"><span>${i}</span>`;b.onclick=()=>{const d=i>current?1:-1;closeDrawer();setTimeout(()=>go(i,d),120)};grid.appendChild(b)}
+['prevBtn','prevEdge'].forEach(id=>document.getElementById(id).onclick=()=>go(current-1,-1));['nextBtn','nextEdge'].forEach(id=>document.getElementById(id).onclick=()=>go(current+1,1));document.getElementById('homeBtn').onclick=()=>go(1,-1);document.getElementById('menuBtn').onclick=openDrawer;document.getElementById('closeDrawer').onclick=closeDrawer;drawer.onclick=e=>{if(e.target===drawer)closeDrawer()};
+document.getElementById('enterBtn').onclick=()=>{document.getElementById('splash').classList.add('hidden');preload(2)};
+document.getElementById('fullBtn').onclick=async()=>{try{if(!document.fullscreenElement){await document.documentElement.requestFullscreen();showToast('Schermo intero attivo')}else await document.exitFullscreen()}catch{showToast('Schermo intero non disponibile')}};
+document.addEventListener('keydown',e=>{if(drawer.classList.contains('open')){if(e.key==='Escape')closeDrawer();return}if(e.key==='ArrowRight'||e.key==='PageDown')go(current+1,1);if(e.key==='ArrowLeft'||e.key==='PageUp')go(current-1,-1);if(e.key==='Home')go(1,-1);if(e.key==='End')go(TOTAL,1);if(e.key==='Escape'&&document.fullscreenElement)document.exitFullscreen()});
+const stage=document.getElementById('stage');stage.addEventListener('touchstart',e=>{const t=e.changedTouches[0];startX=t.clientX;startY=t.clientY;deltaX=0},{passive:true});stage.addEventListener('touchmove',e=>{deltaX=e.changedTouches[0].clientX-startX},{passive:true});stage.addEventListener('touchend',e=>{const t=e.changedTouches[0],dx=t.clientX-startX,dy=t.clientY-startY;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2)go(current+(dx<0?1:-1),dx<0?1:-1)},{passive:true});
+updateUI();})();
+</script>
+</body>
+</html>
