@@ -34,7 +34,7 @@
 <body>
 <div class="app" id="app">
   <div class="stage" id="stage" aria-live="polite">
-    <div class="page-shell"><img id="pageImage" src="images/page-01.png" alt="Pagina 1 del Wedding Book" draggable="false"></div>
+    <div class="page-shell"><img id="pageImage" src="page-01.png" alt="Pagina 1 del Wedding Book" draggable="false"></div>
   </div>
   <button class="nav-edge prev" id="prevEdge" aria-label="Pagina precedente"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
   <button class="nav-edge next" id="nextEdge" aria-label="Pagina successiva"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -59,7 +59,7 @@
 (()=>{'use strict';
 const TOTAL=20, img=document.getElementById('pageImage'), counter=document.getElementById('counter'), drawer=document.getElementById('drawer'), grid=document.getElementById('thumbGrid'), toast=document.getElementById('toast');
 let current=1,busy=false,startX=0,startY=0,deltaX=0;
-const path=n=>`images/page-${String(n).padStart(2,'0')}.png`, thumbPath=n=>`thumbs/page-${String(n).padStart(2,'0')}.webp`;
+const path=n=>`page-${String(n).padStart(2,'0')}.png`, thumbPath=n=>`page-${String(n).padStart(2,'0')}.png`;
 function preload(n){if(n<1||n>TOTAL)return;const p=new Image();p.src=path(n)}
 function updateUI(){counter.textContent=`Pagina ${current} / ${TOTAL}`;document.getElementById('prevBtn').disabled=current===1;document.getElementById('prevEdge').disabled=current===1;document.getElementById('nextBtn').disabled=current===TOTAL;document.getElementById('nextEdge').disabled=current===TOTAL;grid.querySelectorAll('.thumb').forEach((el,i)=>el.classList.toggle('active',i+1===current));preload(current-1);preload(current+1)}
 function go(n,dir=0){n=Math.max(1,Math.min(TOTAL,n));if(n===current||busy)return;busy=true;img.classList.add(dir>0?'leaving-left':'leaving-right');setTimeout(()=>{current=n;img.onload=()=>{img.className='enter';requestAnimationFrame(()=>requestAnimationFrame(()=>{img.className='';busy=false;updateUI()}))};img.onerror=()=>{busy=false;showToast('Immagine non disponibile')};img.src=path(current);img.alt=`Pagina ${current} del Wedding Book`;},180)}
